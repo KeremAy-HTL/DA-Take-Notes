@@ -1,4 +1,4 @@
-import query from '../../db/index.js';
+import query from '../../db/lite.js';
 
 const signup = (firstName, lastName, email, createdAt, updatedAt, verified, hashedPassword) =>
   query(

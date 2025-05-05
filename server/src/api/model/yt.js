@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import query from '../../db/index.js';
+import query from '../../db/lite.js';
 
 const getEverything = () =>
   query(`
