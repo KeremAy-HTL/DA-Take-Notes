@@ -70,7 +70,7 @@ const verifyUser = async (req, res) => {
     }
     await model.verifyUser(userId);
     await model.deleteUserVerification(userId);
-    return res.status(200).redirect('http://localhost:8080/login');
+    return res.status(200).redirect('http://localhost:8080/loreg');
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
