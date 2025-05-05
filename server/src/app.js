@@ -10,6 +10,7 @@ import authRoutes from './api/routes/authentication.js';
 import uploadsRouter from './api/routes/upload.js';
 import databaseRouter from './api/routes/db.js';
 import groupRouter from './api/routes/groups.js';
+import defaultRouter from './api/routes/index.js';
 
 dotenv.config();
 const { SESSION_LIFETIME, SESSION_NAME, SESSION_SECRET } = process.env;
@@ -45,6 +46,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use('/', defaultRouter);
 
 app.use('/auth', authRoutes);
 app.use('/uploads', uploadsRouter);
