@@ -11,6 +11,16 @@ import { VitePWA } from 'vite-plugin-pwa';
 import manifest from './manifest.js';
 
 export default defineConfig({
+  server: {
+    port: 8080,
+    proxy: {
+      '/user-api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/user-api/, ''),
+      },
+    },
+  },
   plugins: [
     VueRouter({
       importMode: 'sync',

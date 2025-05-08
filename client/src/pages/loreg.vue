@@ -6,9 +6,42 @@ import { useQuasar } from 'quasar';
 import axios from 'axios';
 import { googleSdkLoaded } from 'vue3-google-login';
 
+import userUserStore from '@/stores/userStore.js';
+// import { Icon } from '@iconify/vue';
+
+const router = useRouter();
+const store = userUserStore();
+
+const user = ref({
+  firstName: 'Efe',
+  lastName: 'Sert',
+  email: 'sert.e19@htlwienwest.at',
+  password: '123456789',
+  confirmPassword: '123456789',
+});
+
+const register = async (newUser) => {
+  const result = await store.register(newUser);
+
+  if (result && result.verificationToken) {
+    router.push(`/verify/${result.userId}/${result.verificationToken}`);
+  } else {
+    window.scrollTo(0, 300);
+  }
+};
+
+const login = (newUser) => {
+  const result = store.login(newUser);
+
+  result.then((res) => {
+    if (res === 'success') {
+      router.push('/');
+    } else window.scrollTo(0, 300);
+  });
+};
+
 const $q = useQuasar();
 const authStore = useAuthStore();
-const router = useRouter();
 const userDetails = ref(null);
 
 const client_id = import.meta.env.VITE_APP_CLIENT_ID;
@@ -77,14 +110,31 @@ const regPasswordRepeat = ref('');
 
         <!-- Login -->
         <div v-if="tab == 'login'">
-          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md q-ma-sm">
-            <q-input dark filled v-model="username" rounded label="Your Username *" lazy-rules />
+          <q-form
+            @submit="onSubmit"
+            @reset="onReset"
+            class="q-gutter-md q-ma-sm"
+            @submit.prevent="login(user)"
+          >
+            <q-input
+              dark
+              filled
+              type="email"
+              v-model="user.email"
+              rounded
+              id="email-address"
+              label="Your Email *"
+              placeholder="z.B. sert.e19@htlwienwest.at"
+              lazy-rules
+            />
             <q-input
               dark
               filled
               rounded
               type="password"
-              v-model="password"
+              id="passwort"
+              v-model="user.password"
+              placeholder="z.B. p4$$w027"
               label="Your Password *"
               lazy-rules
             />
@@ -92,6 +142,19 @@ const regPasswordRepeat = ref('');
             <div class="row q-gutter-sm justify-center">
               <q-btn label="Submit" type="submit" color="primary" class="full-height" />
               <q-btn label="Reset" type="reset" color="primary" flat class="full-height" />
+            </div>
+            <div
+              class="rounded-[30px] bg-secondary p-6 text-left text-red-500"
+              v-if="store.showErros"
+            >
+              <ul>
+                <li class="flex space-x-5" v-for="error of store.errors" :key="error">
+                  <Icon class="ml-2 mt-1 h-full w-6" icon="material-symbols:error-rounded"></Icon
+                  ><span class="mt-1">
+                    {{ error.msg }}
+                  </span>
+                </li>
+              </ul>
             </div>
 
             <div class="line-separator">
@@ -104,35 +167,53 @@ const regPasswordRepeat = ref('');
 
         <!-- Register -->
         <div v-if="tab == 'register'">
-          <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md q-ma-sm">
+          <q-form
+            @submit="onSubmit"
+            @reset="onReset"
+            class="q-gutter-md q-ma-sm"
+            @submit.prevent="register(user)"
+          >
             <div class="row q-gutter-sm">
               <q-input
                 dark
                 filled
-                v-model="firstName"
+                v-model="user.firstName"
                 rounded
                 label="Your Firstname *"
                 lazy-rules
+                placeholder="z.B. Efe"
                 class="col"
               />
               <q-input
                 dark
                 filled
-                v-model="lastName"
+                v-model="user.lastName"
                 rounded
                 label="Your Lastname *"
                 lazy-rules
+                placeholder="z.B. Sert"
                 class="col"
               />
             </div>
-            <q-input dark filled v-model="EMail" rounded label="Your E-Mail *" lazy-rules />
+            <q-input
+              dark
+              filled
+              rounded
+              label="Your E-Mail *"
+              lazy-rules
+              placeholder="z.B. sert.e19@htlwienwest.at"
+              v-model="user.email"
+            />
             <q-input
               dark
               filled
               rounded
               type="password"
-              v-model="regPassword"
+              v-model="user.password"
               label="Your Password *"
+              placeholder="z.B. 123456789"
+              id="passwort"
+              name="passwort"
               lazy-rules
             />
             <q-input
@@ -140,8 +221,10 @@ const regPasswordRepeat = ref('');
               filled
               rounded
               type="password"
-              v-model="regPasswordRepeat"
+              v-model="user.confirmPassword"
               label="Repeat your Password *"
+              id="confirmPassword"
+              placeholder="z.B. 123456789"
               lazy-rules
             />
 
@@ -149,7 +232,19 @@ const regPasswordRepeat = ref('');
               <q-btn label="Submit" type="submit" color="primary" class="full-height" />
               <q-btn label="Reset" type="reset" color="primary" flat class="full-height" />
             </div>
-
+            <div
+              class="mx-4 rounded-[30px] bg-secondary p-6 text-left text-red-500"
+              v-if="store.showErros"
+            >
+              <ul>
+                <li class="flex space-x-5" v-for="error of store.errors" :key="error">
+                  <Icon class="ml-2 mt-1 h-full w-6" icon="material-symbols:error-rounded"></Icon
+                  ><span class="mt-1">
+                    {{ error.msg }}
+                  </span>
+                </li>
+              </ul>
+            </div>
             <div class="line-separator">
               <div class="line"></div>
               <span class="separator-text">OR</span>

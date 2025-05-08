@@ -1,12 +1,18 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import userUserStore from '@/stores/userStore.js';
+import { useRouter, useRoute } from 'vue-router';
+const route = useRoute();
+
 import axios from 'axios';
 
 const router = useRouter();
 
 const authStore = useAuthStore();
 const drawer = ref(false);
+
+const store = userUserStore();
 
 const menuItems = [
   { to: '/video', label: 'Video', icon: 'description' },
@@ -24,10 +30,37 @@ const logout = async () => {
     console.error('Logout failed:', error);
   }
 };
+const delAccount = () => {
+  store.delAccount(store.user.id);
+  store.logout();
+  router.push('/');
+};
+const isMenuOpen = ref(false);
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
 </script>
 
 <template>
   <header class="row justify-between q-pt-md text-white" style="margin: 0 5vw 0 3vw">
+    <!-- New Desktop Navbar -->
+    <div class="mb-12 mt-4 hidden grid-cols-3 justify-center rounded-full px-10 py-6 sm:grid">
+      <RouterLink class="flex items-center" to="/"></RouterLink>
+      <nav class="flex items-center justify-center text-xl">
+        <RouterLink
+          to="/"
+          class="mr-5 rounded-xl px-5 underline-offset-8"
+          :class="route.fullPath == '/' ? 'font-plutoBd text-blue' : ''"
+          >Home
+        </RouterLink>
+      </nav>
+      <RouterLink class="flex justify-end" to="/loreg" v-if="!store.loggedIn">
+        <button class="rounded-full bg-blue px-10 py-2 text-white">Anmelden</button>
+      </RouterLink>
+      <div class="flex justify-end" v-if="store.loggedIn">
+        <ProfileComp />
+      </div>
+    </div>
     <div class="row items-center space">
       <!-- Desktop: Logo + Tabs -->
       <template v-if="!$q.screen.lt.md">
@@ -88,6 +121,69 @@ const logout = async () => {
           </q-scroll-area>
         </q-drawer>
       </template>
+    </div>
+    <!-- New Mobile Navbar -->
+    <div class="fixed-top navbar flex sm:hidden">
+      <nav
+        class="dark:bg-gray-900 border-gray-200 dark:border-gray-600 left-0 top-0 z-20 w-full border-b bg-white"
+      >
+        <div class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
+          <RouterLink class="flex items-center" to="/"></RouterLink>
+          <div class="flex md:order-2">
+            <button
+              @click="toggleMenu"
+              data-collapse-toggle="navbar-sticky"
+              type="button"
+              class="text-gray-500 hover:bg-gray-100 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 inline-flex items-center rounded-lg p-2 text-sm focus:outline-none focus:ring-2 md:hidden"
+              aria-controls="navbar-sticky"
+              aria-expanded="false"
+            >
+              <i class="fa-solid fa-user-secret"></i>
+            </button>
+          </div>
+          <div
+            class="w-full items-center justify-between md:order-1 md:flex md:w-auto"
+            id="navbar-sticky"
+            :class="{ hidden: !isMenuOpen }"
+          >
+            <ul
+              class="border-gray-100 bg-gray-50 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 mt-4 flex flex-col items-center space-y-3 rounded-lg border p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0"
+            >
+              <li>
+                <RouterLink
+                  @click="toggleMenu"
+                  to="/"
+                  class="rounded-xl px-5 underline-offset-8 focus:font-plutoBd focus:text-blue q-pr-lg"
+                  :class="route.fullPath == '/' ? 'font-plutoBd text-blue' : ''"
+                  >Home
+                </RouterLink>
+              </li>
+              <div class="my-4 w-full border-b-[1px]"></div>
+              <li>
+                <RouterLink
+                  class="flex justify-center"
+                  to="/loreg"
+                  v-if="!store.loggedIn"
+                  @click="toggleMenu"
+                >
+                  <button class="rounded-full bg-blue px-10 py-2 text-white">Anmelden</button>
+                </RouterLink>
+                <div class="flex flex-wrap justify-center space-y-3" v-if="store.loggedIn">
+                  <button class="px-10 text-dark hover:ring-2 hover:ring-blue" @click="logout()">
+                    Abmelden
+                  </button>
+                  <button
+                    class="px-10 text-dark hover:ring-2 hover:ring-blue"
+                    @click="delAccount()"
+                  >
+                    Account löschen
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
     </div>
 
     <!-- Login / Logout Button -->

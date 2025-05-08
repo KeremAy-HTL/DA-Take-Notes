@@ -1,0 +1,45 @@
+GET http://localhost:3000/notes
+###
+GET http://localhost:3000/notes/getApi?videoURL=https://www.youtube.com/watch?v=E3Huy2cdih0
+###
+GET http://localhost:3000/notes/videonotes/2
+###
+POST http://localhost:3000/notes/videolink
+Content-Type: application/json
+
+{
+  "videourl": "https://www.youtube.com/watch?v=Djtsw5k_DNc",
+  "videolength": 100,
+  "title": "Test 123ww221456",
+  "userId": 17
+}
+
+###
+PATCH http://localhost:3000/notes/changeNote
+Content-Type: application/json
+
+{
+  "youtubeNoteId": 4,
+  "title": "Updated YouTubeNote Title",
+  "content": "Updated content for the YouTubeNoewe"
+}
+
+###
+DELETE http://localhost:3000/notes/deleteNote/6
+###
+POST http://localhost:3000/notes/videoNote
+Content-Type: application/json
+
+ {
+  "videourl": "http://example.com/video1234",
+  "videolength": 120,
+  "title": "My Video Title",
+  "content": "This is my note content",
+  "timestamp": "00:01:30",
+  "userId": 17
+}
+
+
+
+
+

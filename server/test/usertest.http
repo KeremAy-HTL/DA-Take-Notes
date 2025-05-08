@@ -1,0 +1,48 @@
+
+### Register
+POST  http://localhost:3000/auth/user/signup
+Content-Type: application/json
+
+{
+  "firstName": "efe",
+  "lastName": "sert",
+  "email": "efeserztt@htlwienwest.at",
+  "password": "123456789",
+  "confirmPassword": "123456789"
+}
+### Logout
+POST  http://localhost:3000/user/signout
+
+### Login
+POST  http://localhost:3000/auth/user/signin
+Content-Type: application/json
+
+{
+  "email": "sert.e19@htlwienwest.at",
+  "password": "123456789"
+}
+###
+DELETE http://localhost:3000/user/delaccount/51
+
+### update Password
+PATCH http://localhost:3000/user/update-password/16
+Content-Type: application/json
+
+{
+  "oldPassword": "12345678912",
+  "newPassword": "12345678912",
+  "confirmPassword": "1234567892"
+}
+
+
+### update Name
+PATCH http://localhost:3000/user/update-name/1
+Content-Type: application/json
+
+{
+  "newFirstName": "Tony",
+  "newLastName": "Stark",
+  "password": "12345678"
+}
+
+
